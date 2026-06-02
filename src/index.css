@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure Mapbox canvas fills its container regardless of Tailwind reset */
+.mapboxgl-canvas {
+  display: block;
+}
