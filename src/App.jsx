@@ -70,9 +70,10 @@ export default function App() {
   const initialPostalRef = useRef(postalInput)
   const [searching, setSearching] = useState(false)
   const [searchError, setSearchError] = useState(null)
+  const [dateStr, setDateStr] = useState(() => toDateString(new Date()))
+  const [dateExpanded, setDateExpanded] = useState(false)
 
-  const today = toDateString(new Date())
-  const selectedDate = buildDate(today, minuteOfDay)
+  const selectedDate = buildDate(dateStr, minuteOfDay)
   const sun = useSunPosition({ date: selectedDate, lat: SG_CENTER[1], lng: SG_CENTER[0] })
   const sliderMinutes = Math.round(minuteOfDay / 15) * 15
   const altDeg = (sun.altitude * 180) / Math.PI
@@ -295,9 +296,48 @@ export default function App() {
               background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${(sliderMinutes / 1440) * 100}%, ${isDark ? '#475569' : '#cbd5e1'} ${(sliderMinutes / 1440) * 100}%, ${isDark ? '#475569' : '#cbd5e1'} 100%)`,
             }}
           />
-          <div className={`flex justify-between text-xs mt-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+          <div className={`flex justify-between text-xs mt-1 mb-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
             <span>00:00</span><span>{minutesToTimeLabel(sliderMinutes)}</span><span>24:00</span>
           </div>
+
+          {/* Date toggle */}
+          <button
+            onClick={() => setDateExpanded(v => !v)}
+            className={`w-full text-xs py-1 rounded-lg border transition-colors ${
+              isDark
+                ? 'border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-500'
+                : 'border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300'
+            }`}
+          >
+            {dateExpanded ? '▲ hide date' : `▼ ${dateStr === toDateString(new Date()) ? 'change date' : dateStr}`}
+          </button>
+
+          {dateExpanded && (
+            <div className="mt-2 flex gap-1.5">
+              <input
+                type="date"
+                value={dateStr}
+                onChange={(e) => setDateStr(e.target.value)}
+                className={`flex-1 min-w-0 text-xs rounded-lg px-2 py-1.5 border focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent ${
+                  isDark
+                    ? 'bg-slate-800 border-slate-600 text-white'
+                    : 'bg-slate-50 border-slate-300 text-slate-800'
+                }`}
+              />
+              {dateStr !== toDateString(new Date()) && (
+                <button
+                  onClick={() => setDateStr(toDateString(new Date()))}
+                  className={`shrink-0 text-xs px-2 py-1.5 rounded-lg border transition-colors ${
+                    isDark
+                      ? 'border-slate-700 text-slate-400 hover:text-slate-200'
+                      : 'border-slate-200 text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  Today
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
